@@ -1,0 +1,16 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+/bin/
+/out/
+
+# OS files
+.DS_Store
+
+# Environment files
+.env
