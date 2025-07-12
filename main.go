@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/joho/godotenv"
 )
+
+var Version = "v1.0.0"
 
 func showUsage() {
 	fmt.Println("Usage:")
@@ -26,6 +29,14 @@ func showUsage() {
 }
 
 func main() {
+	versionFlag := flag.Bool("version", false, "Print version and exit")
+	flag.Parse()
+
+	if *versionFlag {
+		fmt.Println("App Version:", Version)
+		os.Exit(0)
+	}
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: .env file not found or failed to load")

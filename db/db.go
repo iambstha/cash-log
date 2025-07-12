@@ -16,12 +16,12 @@ type DB struct {
 }
 
 func Connect() *DB {
-	host := os.Getenv("DB_HOST")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
+	host := os.Getenv("CASHLOG_DB_HOST")
+	user := os.Getenv("CASHLOG_DB_USER")
+	password := os.Getenv("CASHLOG_DB_PASS")
+	dbname := os.Getenv("CASHLOG_DB_NAME")
+	portStr := os.Getenv("CASHLOG_DB_PORT")
 
-	portStr := os.Getenv("DB_PORT")
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
 		log.Fatal("Invalid DB_PORT:", err)
