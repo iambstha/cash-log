@@ -19,7 +19,10 @@ func showUsage() {
 	fmt.Println("  edit")
 	fmt.Println("  delete")
 	fmt.Println("  add-category")
+	fmt.Println("  remove-category")
 	fmt.Println("  add-type")
+	fmt.Println("  remove-type")
+	fmt.Println("  info")
 }
 
 func main() {
@@ -54,6 +57,13 @@ func main() {
 		handlers.AddCategory(dbConn)
 	case "add-type":
 		handlers.AddType(dbConn)
+	case "remove-category":
+		handlers.RemoveCategory(dbConn)
+	case "remove-type":
+		handlers.RemoveType(dbConn)
+	case "info":
+		handlers.Info(dbConn)
+
 	default:
 		showUsage()
 	}

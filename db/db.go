@@ -35,6 +35,9 @@ func Connect() *DB {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
+	// uncomment this to see the full gorm log, only use for debugging
+	// gormDB = gormDB.Debug()
+
 	return &DB{Gorm: gormDB}
 }
 

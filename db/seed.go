@@ -1,22 +1,25 @@
 package db
 
-import "financetracker/models"
+import (
+	"financetracker/db/constants"
+	"financetracker/models"
+)
 
 func SeedDefaults(dbConn *DB) {
-	initialTypes := []string{"income", "expense"}
-	for _, t := range initialTypes {
+	// Seed protected types
+	for _, t := range constants.ProtectedTransactionTypes {
 		dbConn.Gorm.FirstOrCreate(&models.TransactionType{}, models.TransactionType{Name: t})
 	}
 
-	initialCategories := []models.Category{
-		{Name: "Salary", Type: "income"},
-		{Name: "Freelance", Type: "income"},
-		{Name: "Food", Type: "expense"},
-		{Name: "Transport", Type: "expense"},
-		{Name: "Investment", Type: "expense"},
-		{Name: "Shopping", Type: "expense"},
+	// Convert protected categories map to []models.Category
+	var initialCategories []models.Category
+	for tType, names := range constants.ProtectedCategories {
+		for _, name := range names {
+			initialCategories = append(initialCategories, models.Category{Name: name, Type: tType})
+		}
 	}
 
+	// Seed categories
 	for _, c := range initialCategories {
 		dbConn.Gorm.FirstOrCreate(&models.Category{}, c)
 	}
