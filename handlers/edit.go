@@ -3,8 +3,10 @@ package handlers
 import (
 	"financetracker/db"
 	"financetracker/models"
+	"financetracker/selectors"
 	"financetracker/utils"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 )
@@ -34,15 +36,26 @@ func InteractiveEdit(dbConn *db.DB) {
 		}
 	}
 
-	tType := utils.PromptInput(fmt.Sprintf("Type (%s): ", t.Type))
+	tType, err := selectors.PromptSelectTransactionType(dbConn)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
 	if tType != "" {
 		t.Type = tType
 	}
 
-	category := utils.PromptInput(fmt.Sprintf("Category (%s): ", t.Category))
+	category, err := selectors.PromptSelectCategoryByType(dbConn, tType)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	if category != "" {
 		t.Category = category
 	}
+
 	description := utils.PromptInput(fmt.Sprintf("Description (%s): ", t.Description))
 	if description != "" {
 		t.Description = description

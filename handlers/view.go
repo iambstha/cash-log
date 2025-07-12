@@ -16,7 +16,7 @@ import (
 
 func InteractiveView(dbConn *db.DB) {
 
-	types := append([]string{"All"}, FetchTypes(dbConn)...)
+	types := append([]string{"All"}, utils.FetchTypes(dbConn)...)
 
 	typePrompt := promptui.Select{
 		Label: "Select transaction type",
@@ -32,7 +32,7 @@ func InteractiveView(dbConn *db.DB) {
 	var selectedCategory string
 
 	if selectedType != "All" {
-		categories := FetchCategoriesByType(dbConn, selectedType)
+		categories := utils.FetchCategoriesByType(dbConn, selectedType)
 		if len(categories) > 0 {
 			categories = append([]string{"All"}, categories...)
 

@@ -15,7 +15,7 @@ import (
 
 func AddCategory(dbConn *db.DB) {
 	name := utils.PromptInput("Enter new category name: ")
-	types := FetchTypes(dbConn)
+	types := utils.FetchTypes(dbConn)
 
 	typePrompt := promptui.Select{
 		Label: "Select transaction type",
@@ -47,7 +47,7 @@ func AddType(dbConn *db.DB) {
 }
 
 func RemoveType(dbConn *db.DB) {
-	types := FetchTypes(dbConn)
+	types := utils.FetchTypes(dbConn)
 
 	typePrompt := promptui.Select{
 		Label: "Select transaction type",
@@ -84,7 +84,7 @@ func RemoveType(dbConn *db.DB) {
 }
 
 func RemoveCategory(dbConn *db.DB) {
-	types := FetchTypes(dbConn)
+	types := utils.FetchTypes(dbConn)
 
 	typePrompt := promptui.Select{
 		Label: "Select transaction type",
@@ -97,7 +97,7 @@ func RemoveCategory(dbConn *db.DB) {
 		return
 	}
 
-	categories := FetchCategoriesByType(dbConn, tType)
+	categories := utils.FetchCategoriesByType(dbConn, tType)
 	if len(categories) == 0 {
 		fmt.Printf("No categories found for type: %s\n", tType)
 		return
