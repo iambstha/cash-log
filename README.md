@@ -29,8 +29,8 @@ A simple terminal-based finance tracker written in Go, using PostgreSQL for pers
 
 1. Clone the repo:
     ```bash
-    git clone https://github.com/yourusername/cash-log-cli.git
-    cd cash-log-cli
+    git clone https://github.com/iambstha/cash-log.git
+    cd cash-log
     ```
 2. Create a PostgreSQL database:
     ```bash
@@ -81,14 +81,17 @@ A simple terminal-based finance tracker written in Go, using PostgreSQL for pers
 Run the app with one of these commands:
 
 ```bash
-./cash-log add           # Add a new transaction
-./cash-log view          # View transaction history
-./cash-log edit          # Edit a transaction by ID
-./cash-log delete        # Delete a transaction by ID
-./cash-log balance       # Show income, expenses, and balance summary
-./cash-log add-category  # Add new category
-./cash-log add-type      # Add new transaction type
-./cash-log report        # Generate detailed financial reports
+./cash-log add              # Add a new transaction
+./cash-log view             # View transaction history
+./cash-log edit             # Edit a transaction by ID
+./cash-log delete           # Delete a transaction by ID
+./cash-log balance          # Show income, expenses, and balance summary
+./cash-log add-category     # Add new category
+./cash-log remove-category  # Remove a category
+./cash-log add-type         # Add new transaction type
+./cash-log remove-type      # Remove a transaction type
+./cash-log report           # Generate detailed financial reports
+./cash-log info             # Types and categories info
 ```
 
 Each command will prompt you interactively for required inputs.
