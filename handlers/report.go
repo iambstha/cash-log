@@ -9,6 +9,13 @@ import (
 	"financetracker/models"
 )
 
+const (
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Reset  = "\033[0m"
+)
+
 func MonthlyReport(dbConn *db.DB, filter models.ReportFilter) {
 	var results []models.Result
 
@@ -60,12 +67,21 @@ func MonthlyReport(dbConn *db.DB, filter models.ReportFilter) {
 		log.Fatal("Error running report query:", err)
 	}
 
-	fmt.Println("Monthly Finance Summary")
-	fmt.Println(strings.Repeat("=", 30))
-	fmt.Printf("%-10s %-10s %-10s %-10s\n", "Year-Month", "Income", "Expense", "Balance")
+	fmt.Println("\n📊 Monthly Finance Summary")
+	fmt.Println(strings.Repeat("=", 60))
+	fmt.Printf("| %-10s | %12s | %12s | %12s |\n", "Year-Month", "Income", "Expense", "Balance")
+	fmt.Println(strings.Repeat("-", 60))
 
 	for _, r := range results {
 		balance := r.Income - r.Expense
-		fmt.Printf("%4d-%02d    %10.2f %10.2f %10.2f\n", r.Year, r.Month, r.Income, r.Expense, balance)
+		fmt.Printf("| %-10s | %s%12.2f%s | %s%12.2f%s | %s%12.2f%s |\n",
+			fmt.Sprintf("%d-%02d", r.Year, r.Month),
+			Green, r.Income, Reset,
+			Red, r.Expense, Reset,
+			Yellow, balance, Reset)
+
+		// fmt.Printf("| %-10s | %12.2f | %12.2f | %12.2f |\n",
+		// 	fmt.Sprintf("%d-%02d", r.Year, r.Month), r.Income, r.Expense, balance)
 	}
+	fmt.Println(strings.Repeat("=", 60))
 }

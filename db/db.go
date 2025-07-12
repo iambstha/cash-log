@@ -24,7 +24,7 @@ func Connect() *DB {
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		log.Fatal("Invalid DB_PORT:", err)
+		log.Fatal("Invalid CASHLOG_DB_PORT:", err)
 	}
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",

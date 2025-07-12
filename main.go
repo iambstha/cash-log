@@ -8,6 +8,7 @@ import (
 
 	"financetracker/db"
 	"financetracker/handlers"
+	"financetracker/scheduler"
 
 	"github.com/joho/godotenv"
 )
@@ -37,9 +38,16 @@ func main() {
 		os.Exit(0)
 	}
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found or failed to load")
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "production"
+	}
+
+	if env == "development" || env == "dev" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("Warning: .env file not found or failed to load")
+		}
 	}
 
 	if len(os.Args) < 2 {
@@ -52,6 +60,9 @@ func main() {
 	db.SeedDefaults(dbConn)
 
 	switch os.Args[1] {
+	case "remind":
+		scheduler.StartReminderScheduler()
+		select {}
 	case "add":
 		handlers.InteractiveAdd(dbConn)
 	case "view":
