@@ -20,7 +20,8 @@ func InteractiveAdd(dbConn *db.DB) {
 		return
 	}
 
-	types := fetchTypes(dbConn)
+	// fetch and pass types
+	types := FetchTypes(dbConn)
 
 	typePrompt := promptui.Select{
 		Label: "Select transaction type",
@@ -33,7 +34,8 @@ func InteractiveAdd(dbConn *db.DB) {
 		return
 	}
 
-	categories := fetchCategoriesByType(dbConn, tType)
+	// fetch and pass categories
+	categories := FetchCategoriesByType(dbConn, tType)
 	if len(categories) == 0 {
 		fmt.Printf("No categories found for type: %s\n", tType)
 		return
@@ -43,6 +45,7 @@ func InteractiveAdd(dbConn *db.DB) {
 	for i, cat := range categories {
 		fmt.Printf("[%d] %s\n", i+1, cat)
 	}
+
 	choiceStr := utils.PromptInput("Enter category number: ")
 	choiceIdx, err := strconv.Atoi(choiceStr)
 	if err != nil || choiceIdx < 1 || choiceIdx > len(categories) {
@@ -65,25 +68,4 @@ func InteractiveAdd(dbConn *db.DB) {
 		log.Fatal("Error inserting transaction:", result.Error)
 	}
 	fmt.Println("Transaction added successfully.")
-}
-
-func fetchCategoriesByType(dbConn *db.DB, tType string) []string {
-	var cats []models.Category
-	dbConn.Gorm.Where("type = ?", tType).Order("name asc").Find(&cats)
-
-	var names []string
-	for _, c := range cats {
-		names = append(names, c.Name)
-	}
-	return names
-}
-
-func fetchTypes(dbConn *db.DB) []string {
-	var types []models.TransactionType
-	dbConn.Gorm.Find(&types)
-	var names []string
-	for _, t := range types {
-		names = append(names, t.Name)
-	}
-	return names
 }

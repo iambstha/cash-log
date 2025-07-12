@@ -10,11 +10,51 @@ import (
 	"financetracker/db"
 	"financetracker/models"
 	"financetracker/utils"
+
+	"github.com/manifoldco/promptui"
 )
 
 func InteractiveView(dbConn *db.DB) {
-	tType := utils.PromptInput("Filter by type (income/expense/leave empty): ")
-	category := utils.PromptInput("Filter by category (leave empty): ")
+
+	// fetch and pass types
+	types := append([]string{"All"}, FetchTypes(dbConn)...)
+
+	typePrompt := promptui.Select{
+		Label: "Select transaction type",
+		Items: types,
+	}
+
+	_, tType, err := typePrompt.Run()
+	if err != nil {
+		log.Fatalf("Prompt failed %v\n", err)
+		return
+	}
+
+	// fetch and pass categories
+	var categories []string
+	if tType == "All" {
+		categories = FetchAllCategories(dbConn)
+	} else {
+		categories = FetchCategoriesByType(dbConn, tType)
+	}
+
+	if len(categories) == 0 {
+		fmt.Printf("No categories found for type: %s\n", tType)
+		return
+	}
+
+	fmt.Println("Choose a category:")
+	for i, cat := range categories {
+		fmt.Printf("[%d] %s\n", i+1, cat)
+	}
+
+	choiceStr := utils.PromptInput("Enter category number: ")
+	choiceIdx, err := strconv.Atoi(choiceStr)
+	if err != nil || choiceIdx < 1 || choiceIdx > len(categories) {
+		fmt.Println("Invalid selection.")
+		return
+	}
+	category := categories[choiceIdx-1]
 
 	searchField := utils.PromptInput("Search field (category/description/amount/date/leave empty): ")
 	searchQuery := ""
@@ -46,9 +86,10 @@ func InteractiveView(dbConn *db.DB) {
 		var transactions []models.Transaction
 		query := dbConn.Gorm
 
-		if tType != "" {
+		if tType != "" && tType != "All" {
 			query = query.Where("type = ?", tType)
 		}
+
 		if category != "" {
 			query = query.Where("category = ?", category)
 		}
@@ -94,12 +135,38 @@ func InteractiveView(dbConn *db.DB) {
 		fmt.Printf("%-4s %-10s %-10s %-15s %-30s %-25s %-25s\n", "ID", "Amount", "Type", "Category", "Description", "Created At", "UpdatedAt")
 		fmt.Println(strings.Repeat("-", 125))
 		updatedAtStr := ""
+		var incomeTotal, expenseTotal float64
+
 		for _, t := range transactions {
 			if !t.UpdatedAt.IsZero() {
 				updatedAtStr = t.UpdatedAt.Format("2006-01-02 15:04:05")
 			}
 			fmt.Printf("%-4d %-10.2f %-10s %-15s %-30s %-25s %-25s\n",
 				t.ID, t.Amount, t.Type, t.Category, t.Description, t.CreatedAt.Format("2006-01-02 15:04:05"), updatedAtStr)
+			switch t.Type {
+			case "income":
+				incomeTotal += t.Amount
+			case "expense":
+				expenseTotal += t.Amount
+			}
+
+		}
+
+		fmt.Println("\n--- Summary ---")
+
+		hasIncome := incomeTotal > 0
+		hasExpense := expenseTotal > 0
+
+		switch {
+		case hasIncome && !hasExpense:
+			fmt.Printf("%-15s: %.2f\n", "Total Income", incomeTotal)
+		case !hasIncome && hasExpense:
+			fmt.Printf("%-15s: %.2f\n", "Total Expense", expenseTotal)
+		default:
+			balance := incomeTotal - expenseTotal
+			fmt.Printf("%-15s: %.2f\n", "Total Income", incomeTotal)
+			fmt.Printf("%-15s: %.2f\n", "Total Expense", expenseTotal)
+			fmt.Printf("%-15s: %.2f\n", "Balance", balance)
 		}
 
 		input := utils.PromptInput("\nEnter 'n' for next page, 'q' to quit: ")

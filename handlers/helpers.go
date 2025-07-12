@@ -12,7 +12,7 @@ import (
 
 func AddCategory(dbConn *db.DB) {
 	name := utils.PromptInput("Enter new category name: ")
-	types := fetchTypes(dbConn)
+	types := FetchTypes(dbConn)
 
 	typePrompt := promptui.Select{
 		Label: "Select transaction type",
